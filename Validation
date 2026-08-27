@@ -1,0 +1,837 @@
+
+
+## R1
+
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf int e0/1
+sh ip ospf int e0/2
+sh ip ospf int s2/0
+sh ip ospf database
+sh ip ospf database external
+sh ip route ospf
+sh ip route 0.0.0.0
+sh ip cef 8.8.8.8
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R2
+
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf
+sh ip ospf database
+sh ip ospf database summary
+sh ip ospf database external
+sh ip route ospf
+sh ip route 0.0.0.0
+sh ip prefix-list
+sh ip route 172.16.10.0
+sh ip route 172.16.12.0
+sh ip route 172.16.13.0
+sh ip route 172.16.30.0
+sh ip route 172.16.32.0
+sh ip route 172.16.33.0
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R3
+
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf
+sh ip ospf database
+sh ip ospf database nssa-external
+sh ip ospf database external
+sh ip route ospf
+sh ip route 0.0.0.0
+sh ip route 10.40.0.0
+sh ip route 172.20.10.0
+sh ip route 172.20.20.0
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R4
+
+
+sh ip int br
+sh int desc
+sh ip int br | i Loopback
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf database
+sh ip route ospf
+sh ip route 0.0.0.0
+sh ip dhcp pool
+sh ip dhcp binding
+sh ip dhcp conflict
+sh ip arp
+ping 10.10.10.21
+ping 10.10.20.21
+ping 172.20.10.1
+ping 10.40.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R5
+
+
+sh ip int br
+sh int desc
+sh ip int br | i Loopback
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf int e0/0
+sh ip ospf database
+sh ip route ospf
+sh ip route 0.0.0.0
+ping 172.16.10.1
+ping 172.20.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R6
+
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf database nssa-external
+sh ip route ospf
+sh ip route static
+sh ip route 0.0.0.0
+sh ip route 10.40.0.0
+sh ip route 198.51.100.0
+sh ip sla configuration 10
+sh ip sla statistics 10
+sh track 60
+sh ip prefix-list
+sh route-map
+sh ip protocols
+ping 10.20.60.2 source s2/2
+ping 10.20.61.2 source s2/3
+ping 10.40.10.1
+ping 10.40.20.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R7
+
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int e0/1
+sh ip ospf database
+sh ip route ospf
+sh ip route 0.0.0.0
+ping 10.10.10.1
+ping 172.20.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R8
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int e0/2
+sh ip ospf database
+sh ip route ospf
+sh ip route 0.0.0.0
+ping 10.10.20.1
+ping 172.20.20.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R9
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int e0/3
+sh ip ospf database
+sh ip route ospf
+sh ip route 0.0.0.0
+ping 10.40.10.1
+ping 172.20.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R10
+
+sh ip int br
+sh int desc
+sh standby br
+sh standby
+sh track 10
+sh ip sla configuration 20
+sh ip sla statistics 20
+sh ip route
+sh ip route 0.0.0.0
+sh ip dhcp pool
+sh ip dhcp binding
+sh ip dhcp conflict
+sh ip arp
+ping 10.20.60.1 source s2/2
+ping 10.10.10.1
+ping 172.20.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R11
+
+sh ip int br
+sh int desc
+sh standby br
+sh standby
+sh track 11
+sh ip route
+sh ip route 0.0.0.0
+sh ip dhcp pool
+sh ip dhcp binding
+sh ip dhcp conflict
+sh ip arp
+ping 10.20.61.1 source s2/3
+ping 10.10.20.1
+ping 172.20.20.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+# EIGRP Domain
+
+## R19
+
+sh ip int br
+sh int desc
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology all-links
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip route 0.0.0.0
+sh ip protocols
+sh key chain
+ping 10.100.32.1
+ping 172.20.10.1
+ping 10.10.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R20
+
+
+sh ip int br
+sh int desc
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology all-links
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip route 0.0.0.0
+sh ip protocols
+sh key chain
+ping 10.100.19.1
+ping 10.100.20.10
+ping 172.24.10.1
+ping 172.20.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R21
+
+
+sh ip int br
+sh int desc
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology all-links
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip route 0.0.0.0
+sh ip protocols
+sh key chain
+ping 10.100.19.5
+ping 10.100.21.2
+ping 172.24.10.1
+ping 172.20.20.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R22
+
+
+sh ip int br
+sh int desc
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip route 0.0.0.0
+sh ip protocols
+sh key chain
+ping 10.100.20.5
+ping 10.100.22.2
+ping 172.24.10.1
+ping 172.20.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R23
+
+
+sh ip int br
+sh int desc
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology all-links
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip route 0.0.0.0
+sh ip route 172.20.0.0
+sh ip route 172.24.8.0
+sh ip protocols
+sh ip prefix-list
+sh route-map
+sh key chain
+ping 10.200.23.2
+ping 172.20.10.1
+ping 172.24.10.1
+ping 10.10.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R24
+
+
+sh ip int br
+sh int desc
+sh ip int br | i Loopback
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip route 0.0.0.0
+sh ip route 172.24.8.0
+sh ip protocols
+sh key chain
+ping 172.20.10.1
+ping 10.10.10.1 source lo10
+ping 8.8.8.8 source lo10
+trace 8.8.8.8
+
+
+## R25
+
+
+sh ip int br
+sh int desc
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip route 0.0.0.0
+sh ip protocols
+sh key chain
+sh ip dhcp pool
+sh ip dhcp binding
+sh ip dhcp conflict
+sh ip arp
+ping 10.200.23.1
+ping 172.24.10.1
+ping 10.10.10.1
+ping 10.40.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+# BGP Domain
+
+## R29
+
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf database external
+sh ip route ospf
+sh ip route 0.0.0.0
+sh ip bgp sum
+sh ip bgp
+sh ip bgp 0.0.0.0
+sh ip bgp 8.8.8.8
+sh ip route bgp
+sh ip bgp neighbors
+ping 10.255.0.30 source lo0
+ping 10.255.0.31 source lo0
+ping 10.255.0.32 source lo0
+ping 8.8.8.8 source lo0
+trace 8.8.8.8
+
+
+## R30
+
+
+sh ip int br
+sh int desc
+sh ip bgp sum
+sh ip bgp
+sh ip bgp 0.0.0.0
+sh ip bgp 8.8.8.8
+sh ip bgp regexp _65001_
+sh ip bgp regexp _65002_
+sh ip route bgp
+sh ip route 0.0.0.0
+sh ip prefix-list
+sh route-map
+sh ip bgp neighbors 192.0.2.2 advertised-routes
+sh ip bgp neighbors 203.0.113.2 received-routes
+ping 10.255.0.29 source lo0
+ping 10.255.0.31 source lo0
+ping 10.255.0.32 source lo0
+ping 192.0.2.2
+ping 203.0.113.2
+ping 8.8.8.8
+ping 10.10.10.1
+ping 172.20.10.1
+trace 8.8.8.8
+
+
+## R31
+
+
+sh ip int br
+sh int desc
+sh ip bgp sum
+sh ip bgp
+sh ip bgp 0.0.0.0
+sh ip bgp 8.8.8.8
+sh ip bgp regexp _65001_
+sh ip bgp regexp _65002_
+sh ip route bgp
+sh ip route 0.0.0.0
+sh ip prefix-list
+sh route-map
+sh ip bgp neighbors 192.0.2.6 advertised-routes
+sh ip bgp neighbors 203.0.113.6 received-routes
+ping 10.255.0.29 source lo0
+ping 10.255.0.30 source lo0
+ping 10.255.0.32 source lo0
+ping 192.0.2.6
+ping 203.0.113.6
+ping 8.8.8.8
+ping 10.40.10.1
+ping 172.20.20.1
+trace 8.8.8.8
+
+
+## R32
+
+
+sh ip int br
+sh int desc
+sh ip ospf nei
+sh ip ospf int br
+sh ip ospf database external
+sh ip route ospf
+sh ip eigrp nei
+sh ip eigrp int
+sh ip eigrp topology
+sh ip eigrp topology 0.0.0.0/0
+sh ip route eigrp
+sh ip bgp sum
+sh ip bgp
+sh ip bgp 0.0.0.0
+sh ip bgp 8.8.8.8
+sh ip route bgp
+sh ip route 0.0.0.0
+sh ip route 172.20.10.0
+sh ip route 172.20.20.0
+sh ip prefix-list
+sh route-map
+sh key chain
+ping 10.255.0.29 source lo0
+ping 10.255.0.30 source lo0
+ping 10.255.0.31 source lo0
+ping 10.100.32.2
+ping 10.10.10.1
+ping 172.20.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+# External BGP Domains
+
+## R34
+
+
+sh ip int br
+sh int desc
+sh ip int br | i Loopback
+sh ip bgp sum
+sh ip bgp
+sh ip route bgp
+sh ip prefix-list
+sh ip bgp neighbors 203.0.113.1 advertised-routes
+sh ip bgp neighbors 203.0.113.1 routes
+ping 203.0.113.1
+ping 8.8.8.8
+ping 10.10.10.1 source lo10
+ping 172.20.10.1 source lo10
+trace 8.8.8.8
+
+
+## R33
+
+
+sh ip int br
+sh int desc
+sh ip bgp sum
+sh ip bgp
+sh ip route bgp
+sh ip bgp regexp _65000_
+sh ip bgp neighbors 203.0.113.5 routes
+sh ip bgp neighbors 203.0.113.10 routes
+ping 203.0.113.5
+ping 203.0.113.10
+ping 198.51.10.1
+ping 8.8.8.8
+trace 8.8.8.8
+
+
+## R35
+
+
+sh ip int br
+sh int desc
+sh ip int br | i Loopback
+sh ip bgp sum
+sh ip bgp
+sh ip route bgp
+sh ip bgp neighbors 203.0.113.9 advertised-routes
+sh ip bgp neighbors 203.0.113.9 routes
+ping 203.0.113.9
+ping 8.8.8.8
+ping 10.10.10.1 source lo10
+ping 172.20.10.1 source lo10
+trace 8.8.8.8
+
+
+## INTERNET
+
+
+sh ip int br
+sh int desc
+sh ip bgp sum
+sh ip bgp
+sh ip bgp 0.0.0.0
+sh ip bgp 8.8.8.8
+sh ip route bgp
+sh ip route 10.0.0.0
+sh ip route 172.16.0.0
+sh ip bgp neighbors 192.0.2.1 advertised-routes
+sh ip bgp neighbors 192.0.2.5 advertised-routes
+ping 192.0.2.1
+ping 192.0.2.5
+ping 10.10.10.1 source lo0
+ping 10.40.10.1 source lo0
+ping 172.20.10.1 source lo0
+ping 172.20.20.1 source lo0
+trace 10.10.10.1 source lo0
+trace 172.20.10.1 source lo0
+
+
+# Switches
+
+## SW12
+
+
+sh int status
+sh int desc
+sh vlan br
+sh int trunk
+sh int e0/0 switchport
+sh int e0/1 switchport
+sh int e0/2 switchport
+sh mac address-table dynamic
+sh spanning-tree vlan 10
+sh spanning-tree vlan 20
+
+
+## SW13
+
+
+sh int status
+sh int desc
+sh vlan br
+sh mac address-table dynamic vlan 30
+sh spanning-tree vlan 30
+sh spanning-tree vlan 30 br
+
+
+## SW14
+
+
+sh int status
+sh int desc
+sh vlan br
+sh int trunk
+sh int e0/0 switchport
+sh int e0/1 switchport
+sh int e0/2 switchport
+sh int e0/3 switchport
+sh mac address-table dynamic
+sh spanning-tree vlan 110
+sh spanning-tree vlan 120
+
+
+## SW25
+
+
+sh int status
+sh int desc
+sh vlan br
+sh int trunk
+sh int e0/1 switchport
+sh int e0/2 switchport
+sh int e0/3 switchport
+sh mac address-table dynamic
+sh spanning-tree vlan 210
+sh spanning-tree vlan 220
+
+
+# Clients
+
+## PC15
+
+
+show ip
+show arp
+ping 10.10.10.1
+ping 10.10.20.1
+ping 10.40.10.1
+ping 172.20.10.21
+ping 172.20.20.21
+ping 8.8.8.8
+trace 172.20.10.21
+trace 8.8.8.8
+
+
+## PC17
+
+
+show ip
+show arp
+ping 10.10.20.1
+ping 10.10.10.1
+ping 10.40.20.1
+ping 172.20.10.21
+ping 172.20.20.21
+ping 8.8.8.8
+trace 172.20.20.21
+trace 8.8.8.8
+
+
+## PC16
+
+
+show ip
+show arp
+ping 10.40.10.1
+ping 10.10.10.21
+ping 10.10.20.21
+ping 172.20.10.21
+ping 172.20.20.21
+ping 8.8.8.8
+trace 10.10.10.21
+trace 8.8.8.8
+
+
+## PC18
+
+
+show ip
+show arp
+ping 10.40.20.1
+ping 10.10.10.21
+ping 10.10.20.21
+ping 172.20.10.21
+ping 172.20.20.21
+ping 8.8.8.8
+trace 10.10.10.21
+trace 8.8.8.8
+
+
+## PC27
+
+
+show ip
+show arp
+ping 172.20.10.1
+ping 172.20.20.1
+ping 10.10.10.21
+ping 10.10.20.21
+ping 10.40.10.21
+ping 10.40.20.21
+ping 8.8.8.8
+trace 10.10.10.21
+trace 8.8.8.8
+
+
+## PC28
+
+
+show ip
+show arp
+ping 172.20.20.1
+ping 172.20.10.1
+ping 10.10.10.21
+ping 10.10.20.21
+ping 10.40.10.21
+ping 10.40.20.21
+ping 8.8.8.8
+trace 10.10.20.21
+trace 8.8.8.8
+
+
+# Failover Validation
+
+## Static route and HSRP failover
+
+
+R6# sh ip route 10.40.0.0
+R6# sh track 60
+R10# sh standby br
+R11# sh standby br
+
+
+Shut the primary path:
+
+R6# conf t
+R6(config)# int s2/2
+R6(config-if)# shut
+R6(config-if)# end
+
+
+Verify:
+
+
+R6# sh ip route 10.40.0.0
+R6# sh track 60
+R10# sh standby br
+R11# sh standby br
+
+
+Restore:
+
+
+R6# conf t
+R6(config)# int s2/2
+R6(config-if)# no shut
+R6(config-if)# end
+
+
+## BGP Internet failover
+
+Before failure:
+
+
+R29# sh ip route 0.0.0.0
+R32# sh ip route 0.0.0.0
+R30# sh ip bgp 0.0.0.0
+R31# sh ip bgp 0.0.0.0
+
+
+Shut the primary Internet link:
+
+
+R30# conf t
+R30(config)# int e0/0
+R30(config-if)# shut
+R30(config-if)# end
+
+
+Verify:
+
+
+R29# sh ip route 0.0.0.0
+R32# sh ip route 0.0.0.0
+R31# sh ip bgp 0.0.0.0
+R31# sh ip route 0.0.0.0
+
+
+Restore:
+
+
+R30# conf t
+R30(config)# int e0/0
+R30(config-if)# no shut
+R30(config-if)# end
+
+
+## EIGRP convergence
+
+
+R20# sh ip eigrp topology all-links
+R20# sh ip route 0.0.0.0
+
+
+Shut one successor path:
+
+
+R20# conf t
+R20(config)# int e0/1
+R20(config-if)# shut
+R20(config-if)# end
+
+
+Verify:
+
+
+R20# sh ip eigrp nei
+R20# sh ip eigrp topology
+R20# sh ip route 0.0.0.0
+R20# ping 8.8.8.8
+
+
+Restore:
+
+
+R20# conf t
+R20(config)# int e0/1
+R20(config-if)# no shut
+R20(config-if)# end
