@@ -1,0 +1,2041 @@
+**Full Configuration — CCNP ENCOR Multi-Protocol Enterprise Lab**
+
+## R1
+
+
+en
+conf t
+hostname R1
+no ip domain-lookup
+
+int e0/1
+ desc AREA0_TO_R2
+ ip add 10.0.12.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int e0/2
+ desc AREA0_TO_R3
+ ip add 10.0.13.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int s2/0
+ desc AREA0_TO_R29
+ ip add 10.0.129.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 20
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+router ospf 1
+ router-id 1.1.1.1
+ auto-cost reference-bandwidth 10000
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface e0/1
+ no passive-interface e0/2
+ no passive-interface s2/0
+ maximum-paths 2
+ network 10.0.12.0 0.0.0.3 area 0
+ network 10.0.13.0 0.0.0.3 area 0
+ network 10.0.129.0 0.0.0.3 area 0
+ exit
+
+end
+wr
+
+
+## R2
+
+
+en
+conf t
+hostname R2
+no ip domain-lookup
+
+int e0/0
+ desc AREA0_TO_R3
+ ip add 10.0.23.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 20
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int e0/1
+ desc AREA0_TO_R1
+ ip add 10.0.12.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int e0/2
+ desc AREA10_TO_R4
+ ip add 10.10.24.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA10
+ no shut
+ exit
+
+int e0/3
+ desc AREA30_TO_R5
+ ip add 10.30.25.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA30
+ no shut
+ exit
+
+ip prefix-list AREA10-FILTER seq 5 deny 172.16.13.0/24
+ip prefix-list AREA10-FILTER seq 10 deny 172.16.14.0/24
+ip prefix-list AREA10-FILTER seq 20 permit 0.0.0.0/0 le 32
+
+ip prefix-list AREA30-FILTER seq 5 deny 172.16.33.0/24
+ip prefix-list AREA30-FILTER seq 10 deny 172.16.34.0/24
+ip prefix-list AREA30-FILTER seq 20 permit 0.0.0.0/0 le 32
+
+router ospf 1
+ router-id 2.2.2.2
+ auto-cost reference-bandwidth 10000
+ area 0 authentication message-digest
+ area 10 authentication message-digest
+ area 30 authentication message-digest
+ area 10 stub no-summary
+ area 30 stub
+ area 10 filter-list prefix AREA10-FILTER out
+ area 30 filter-list prefix AREA30-FILTER out
+ area 10 range 172.16.10.0 255.255.254.0
+ area 30 range 172.16.30.0 255.255.254.0
+ passive-interface default
+ no passive-interface e0/0
+ no passive-interface e0/1
+ no passive-interface e0/2
+ no passive-interface e0/3
+ maximum-paths 2
+ network 10.0.12.0 0.0.0.3 area 0
+ network 10.0.23.0 0.0.0.3 area 0
+ network 10.10.24.0 0.0.0.3 area 10
+ network 10.30.25.0 0.0.0.3 area 30
+ exit
+
+end
+wr
+
+
+## R3
+
+
+en
+conf t
+hostname R3
+no ip domain-lookup
+
+int e0/0
+ desc AREA0_TO_R2
+ ip add 10.0.23.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 20
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int e0/2
+ desc AREA0_TO_R1
+ ip add 10.0.13.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 10
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int s2/0
+ desc AREA0_TO_R32
+ ip add 10.0.132.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf cost 20
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int s2/1
+ desc AREA20_TO_R6
+ ip add 10.20.36.1 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA20
+ no shut
+ exit
+
+router ospf 1
+ router-id 3.3.3.3
+ auto-cost reference-bandwidth 10000
+ area 0 authentication message-digest
+ area 20 authentication message-digest
+ area 20 nssa no-summary
+ passive-interface default
+ no passive-interface e0/0
+ no passive-interface e0/2
+ no passive-interface s2/0
+ no passive-interface s2/1
+ maximum-paths 2
+ network 10.0.13.0 0.0.0.3 area 0
+ network 10.0.23.0 0.0.0.3 area 0
+ network 10.0.132.0 0.0.0.3 area 0
+ network 10.20.36.0 0.0.0.3 area 20
+ exit
+
+end
+wr
+
+
+## R4
+
+
+en
+conf t
+hostname R4
+no ip domain-lookup
+service dhcp
+
+int e0/2
+ desc AREA10_TO_R2
+ ip add 10.10.24.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA10
+ no shut
+ exit
+
+int e0/0
+ desc TRUNK_TO_SW12
+ no ip add
+ no shut
+ exit
+
+int e0/0.10
+ desc VLAN10_GATEWAY
+ encapsulation dot1Q 10
+ ip add 10.10.10.1 255.255.255.0
+ exit
+
+int e0/0.20
+ desc VLAN20_GATEWAY
+ encapsulation dot1Q 20
+ ip add 10.10.20.1 255.255.255.0
+ exit
+
+int lo10
+ desc AREA10_LOOPBACK_1
+ ip add 172.16.10.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 10
+ exit
+
+int lo11
+ desc AREA10_LOOPBACK_2
+ ip add 172.16.11.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 10
+ exit
+
+int lo12
+ desc AREA10_LOOPBACK_3
+ ip add 172.16.12.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 10
+ exit
+
+int lo13
+ desc AREA10_LOOPBACK_4_FILTERED
+ ip add 172.16.13.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 10
+ exit
+
+int lo14
+ desc AREA10_LOOPBACK_5_FILTERED
+ ip add 172.16.14.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 10
+ exit
+
+ip dhcp excluded-address 10.10.10.1 10.10.10.20
+ip dhcp excluded-address 10.10.20.1 10.10.20.20
+
+ip dhcp pool AREA10-VLAN10
+ network 10.10.10.0 255.255.255.0
+ default-router 10.10.10.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+ip dhcp pool AREA10-VLAN20
+ network 10.10.20.0 255.255.255.0
+ default-router 10.10.20.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+router ospf 1
+ router-id 4.4.4.4
+ auto-cost reference-bandwidth 10000
+ area 10 authentication message-digest
+ area 10 stub
+ passive-interface default
+ no passive-interface e0/2
+ network 10.10.24.0 0.0.0.3 area 10
+ network 10.10.10.0 0.0.0.255 area 10
+ network 10.10.20.0 0.0.0.255 area 10
+ exit
+
+end
+wr
+
+
+## R5
+
+
+en
+conf t
+hostname R5
+no ip domain-lookup
+
+int e0/3
+ desc AREA30_TO_R2
+ ip add 10.30.25.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA30
+ no shut
+ exit
+
+int e0/0
+ desc AREA30_SHARED_LAN
+ ip add 10.30.0.5 255.255.255.0
+ ip ospf priority 255
+ ip ospf message-digest-key 1 md5 OSPF-AREA30
+ no shut
+ exit
+
+int lo30
+ ip add 172.16.30.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 30
+ exit
+
+int lo31
+ ip add 172.16.31.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 30
+ exit
+
+int lo32
+ ip add 172.16.32.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 30
+ exit
+
+int lo33
+ ip add 172.16.33.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 30
+ exit
+
+int lo34
+ ip add 172.16.34.1 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 1 area 30
+ exit
+
+router ospf 1
+ router-id 5.5.5.5
+ auto-cost reference-bandwidth 10000
+ area 30 authentication message-digest
+ area 30 stub
+ passive-interface default
+ no passive-interface e0/3
+ no passive-interface e0/0
+ network 10.30.25.0 0.0.0.3 area 30
+ network 10.30.0.0 0.0.0.255 area 30
+ exit
+
+end
+wr
+
+
+## R6
+
+
+en
+conf t
+hostname R6
+no ip domain-lookup
+
+int s2/1
+ desc AREA20_TO_R3
+ ip add 10.20.36.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA20
+ no shut
+ exit
+
+int s2/2
+ desc PRIMARY_STATIC_TO_R10
+ ip add 10.20.60.1 255.255.255.252
+ no shut
+ exit
+
+int s2/3
+ desc FLOATING_STATIC_TO_R11
+ ip add 10.20.61.1 255.255.255.252
+ no shut
+ exit
+
+ip sla 10
+ icmp-echo 10.20.60.2 source-interface s2/2
+ timeout 2000
+ frequency 5
+ exit
+
+ip sla schedule 10 life forever start-time now
+track 60 ip sla 10 reachability
+
+ip route 10.40.0.0 255.255.224.0 10.20.60.2 track 60
+ip route 10.40.0.0 255.255.224.0 10.20.61.2 200
+ip route 198.51.100.0 255.255.255.0 Null0
+
+ip prefix-list STATIC-E1 seq 5 permit 10.40.0.0/19
+ip prefix-list STATIC-E2 seq 5 permit 198.51.100.0/24
+
+route-map STATIC-TO-OSPF permit 10
+ match ip address prefix-list STATIC-E1
+ set metric 20
+ set metric-type type-1
+ set tag 600
+ exit
+
+route-map STATIC-TO-OSPF permit 20
+ match ip address prefix-list STATIC-E2
+ set metric 50
+ set metric-type type-2
+ set tag 602
+ exit
+
+router ospf 1
+ router-id 6.6.6.6
+ auto-cost reference-bandwidth 10000
+ area 20 authentication message-digest
+ area 20 nssa
+ passive-interface default
+ no passive-interface s2/1
+ network 10.20.36.0 0.0.0.3 area 20
+ redistribute static subnets route-map STATIC-TO-OSPF
+ exit
+
+end
+wr
+
+
+## R7
+
+
+en
+conf t
+hostname R7
+no ip domain-lookup
+
+int e0/1
+ desc AREA30_SHARED_LAN
+ ip add 10.30.0.7 255.255.255.0
+ ip ospf priority 100
+ ip ospf message-digest-key 1 md5 OSPF-AREA30
+ no shut
+ exit
+
+router ospf 1
+ router-id 7.7.7.7
+ auto-cost reference-bandwidth 10000
+ area 30 authentication message-digest
+ area 30 stub
+ passive-interface default
+ no passive-interface e0/1
+ network 10.30.0.0 0.0.0.255 area 30
+ exit
+
+end
+wr
+
+
+## R8
+
+
+en
+conf t
+hostname R8
+no ip domain-lookup
+
+int e0/2
+ desc AREA30_SHARED_LAN
+ ip add 10.30.0.8 255.255.255.0
+ ip ospf priority 0
+ ip ospf message-digest-key 1 md5 OSPF-AREA30
+ no shut
+ exit
+
+router ospf 1
+ router-id 8.8.8.8
+ auto-cost reference-bandwidth 10000
+ area 30 authentication message-digest
+ area 30 stub
+ passive-interface default
+ no passive-interface e0/2
+ network 10.30.0.0 0.0.0.255 area 30
+ exit
+
+end
+wr
+
+
+## R9
+
+en
+conf t
+hostname R9
+no ip domain-lookup
+
+int e0/3
+ desc AREA30_SHARED_LAN
+ ip add 10.30.0.9 255.255.255.0
+ ip ospf priority 0
+ ip ospf message-digest-key 1 md5 OSPF-AREA30
+ no shut
+ exit
+
+router ospf 1
+ router-id 9.9.9.9
+ auto-cost reference-bandwidth 10000
+ area 30 authentication message-digest
+ area 30 stub
+ passive-interface default
+ no passive-interface e0/3
+ network 10.30.0.0 0.0.0.255 area 30
+ exit
+
+end
+wr
+
+
+## R10
+
+
+en
+conf t
+hostname R10
+no ip domain-lookup
+service dhcp
+
+int s2/2
+ desc PRIMARY_PATH_TO_R6
+ ip add 10.20.60.2 255.255.255.252
+ no shut
+ exit
+
+ip sla 20
+ icmp-echo 10.20.60.1 source-interface s2/2
+ timeout 2000
+ frequency 5
+ exit
+
+ip sla schedule 20 life forever start-time now
+track 10 ip sla 20 reachability
+
+int e0/1
+ desc TRUNK_TO_SW14
+ no ip add
+ no shut
+ exit
+
+int e0/1.110
+ desc VLAN110_PRIMARY_GATEWAY
+ encapsulation dot1Q 110
+ ip add 10.40.10.2 255.255.255.0
+ standby 110 ip 10.40.10.1
+ standby 110 priority 110
+ standby 110 preempt
+ standby 110 track 10 decrement 30
+ exit
+
+int e0/1.120
+ desc VLAN120_PRIMARY_GATEWAY
+ encapsulation dot1Q 120
+ ip add 10.40.20.2 255.255.255.0
+ standby 120 ip 10.40.20.1
+ standby 120 priority 110
+ standby 120 preempt
+ standby 120 track 10 decrement 30
+ exit
+
+ip route 0.0.0.0 0.0.0.0 10.20.60.1
+
+ip dhcp excluded-address 10.40.10.1 10.40.10.20
+ip dhcp excluded-address 10.40.10.150 10.40.10.254
+ip dhcp excluded-address 10.40.20.1 10.40.20.20
+ip dhcp excluded-address 10.40.20.150 10.40.20.254
+
+ip dhcp pool VLAN110-R10
+ network 10.40.10.0 255.255.255.0
+ default-router 10.40.10.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+ip dhcp pool VLAN120-R10
+ network 10.40.20.0 255.255.255.0
+ default-router 10.40.20.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+end
+wr
+
+
+## R11
+
+
+en
+conf t
+hostname R11
+no ip domain-lookup
+service dhcp
+
+int s2/3
+ desc BACKUP_PATH_TO_R6
+ ip add 10.20.61.2 255.255.255.252
+ no shut
+ exit
+
+track 11 interface s2/3 line-protocol
+
+int e0/2
+ desc TRUNK_TO_SW14
+ no ip add
+ no shut
+ exit
+
+int e0/2.110
+ desc VLAN110_BACKUP_GATEWAY
+ encapsulation dot1Q 110
+ ip add 10.40.10.3 255.255.255.0
+ standby 110 ip 10.40.10.1
+ standby 110 priority 100
+ standby 110 preempt
+ standby 110 track 11 decrement 30
+ exit
+
+int e0/2.120
+ desc VLAN120_BACKUP_GATEWAY
+ encapsulation dot1Q 120
+ ip add 10.40.20.3 255.255.255.0
+ standby 120 ip 10.40.20.1
+ standby 120 priority 100
+ standby 120 preempt
+ standby 120 track 11 decrement 30
+ exit
+
+ip route 0.0.0.0 0.0.0.0 10.20.61.1
+
+ip dhcp excluded-address 10.40.10.1 10.40.10.149
+ip dhcp excluded-address 10.40.20.1 10.40.20.149
+
+ip dhcp pool VLAN110-R11
+ network 10.40.10.0 255.255.255.0
+ default-router 10.40.10.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+ip dhcp pool VLAN120-R11
+ network 10.40.20.0 255.255.255.0
+ default-router 10.40.20.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+end
+wr
+
+
+# EIGRP DOMAIN
+
+## R19
+
+
+en
+conf t
+hostname R19
+no ip domain-lookup
+
+int e0/0
+ desc TO_R32
+ ip add 10.100.32.2 255.255.255.252
+ no shut
+ exit
+
+int e0/1
+ desc TO_R20
+ ip add 10.100.19.1 255.255.255.252
+ no shut
+ exit
+
+int e0/2
+ desc TO_R21
+ ip add 10.100.19.5 255.255.255.252
+ no shut
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+router eigrp EIGRP100
+ address-family ipv4 unicast autonomous-system 100
+  eigrp router-id 19.19.19.19
+  network 10.100.32.0 0.0.0.3
+  network 10.100.19.0 0.0.0.3
+  network 10.100.19.4 0.0.0.3
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/0
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface e0/1
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface e0/2
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  topology base
+   maximum-paths 4
+   variance 2
+   exit-af-topology
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R20
+
+
+en
+conf t
+hostname R20
+no ip domain-lookup
+
+int e0/1
+ desc TO_R19
+ ip add 10.100.19.2 255.255.255.252
+ no shut
+ exit
+
+int s2/0
+ desc TO_R21
+ ip add 10.100.20.1 255.255.255.252
+ no shut
+ exit
+
+int e0/3
+ desc TO_R22
+ ip add 10.100.20.5 255.255.255.252
+ no shut
+ exit
+
+int e0/2
+ desc TO_R23
+ ip add 10.100.20.9 255.255.255.252
+ no shut
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+router eigrp EIGRP100
+ address-family ipv4 unicast autonomous-system 100
+  eigrp router-id 20.20.20.20
+  network 10.100.19.0 0.0.0.3
+  network 10.100.20.0 0.0.0.3
+  network 10.100.20.4 0.0.0.3
+  network 10.100.20.8 0.0.0.3
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/1
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface s2/0
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface e0/3
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface e0/2
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  topology base
+   maximum-paths 4
+   variance 2
+   exit-af-topology
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R21
+
+
+en
+conf t
+hostname R21
+no ip domain-lookup
+
+int e0/2
+ desc TO_R19
+ ip add 10.100.19.6 255.255.255.252
+ no shut
+ exit
+
+int s2/0
+ desc TO_R20
+ ip add 10.100.20.2 255.255.255.252
+ no shut
+ exit
+
+int e0/3
+ desc TO_R23
+ ip add 10.100.21.1 255.255.255.252
+ no shut
+ exit
+
+int e0/1
+ desc TO_R24
+ ip add 10.100.21.5 255.255.255.252
+ no shut
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+router eigrp EIGRP100
+ address-family ipv4 unicast autonomous-system 100
+  eigrp router-id 21.21.21.21
+  network 10.100.19.4 0.0.0.3
+  network 10.100.20.0 0.0.0.3
+  network 10.100.21.0 0.0.0.3
+  network 10.100.21.4 0.0.0.3
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/2
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface s2/0
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface e0/3
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface e0/1
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  topology base
+   maximum-paths 4
+   variance 2
+   exit-af-topology
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R22
+
+
+en
+conf t
+hostname R22
+no ip domain-lookup
+
+int e0/3
+ desc TO_R20
+ ip add 10.100.20.6 255.255.255.252
+ no shut
+ exit
+
+int s2/1
+ desc TO_R23
+ ip add 10.100.22.1 255.255.255.252
+ no shut
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+router eigrp EIGRP100
+ address-family ipv4 unicast autonomous-system 100
+  eigrp router-id 22.22.22.22
+  network 10.100.20.4 0.0.0.3
+  network 10.100.22.0 0.0.0.3
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/3
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface s2/1
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  topology base
+   maximum-paths 2
+   exit-af-topology
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R23
+
+
+en
+conf t
+hostname R23
+no ip domain-lookup
+
+int e0/2
+ desc TO_R20
+ ip add 10.100.20.10 255.255.255.252
+ no shut
+ exit
+
+int e0/3
+ desc TO_R21
+ ip add 10.100.21.2 255.255.255.252
+ no shut
+ exit
+
+int s2/1
+ desc TO_R22
+ ip add 10.100.22.2 255.255.255.252
+ no shut
+ exit
+
+int s2/2
+ desc TO_R24
+ ip add 10.100.23.1 255.255.255.252
+ no shut
+ exit
+
+int e0/0
+ desc EIGRP200_TO_R25
+ ip add 10.200.23.1 255.255.255.252
+ no shut
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+ip prefix-list AS100-TO-AS200 seq 5 permit 0.0.0.0/0
+ip prefix-list AS100-TO-AS200 seq 10 permit 10.0.0.0/8 le 32
+ip prefix-list AS100-TO-AS200 seq 20 permit 172.16.0.0/12 le 32
+
+route-map AS200-TO-AS100 deny 5
+ match tag 100
+ exit
+
+route-map AS200-TO-AS100 permit 10
+ set tag 200
+ exit
+
+route-map AS100-TO-AS200 deny 5
+ match tag 200
+ exit
+
+route-map AS100-TO-AS200 permit 10
+ match ip address prefix-list AS100-TO-AS200
+ set tag 100
+ exit
+
+router eigrp EIGRP100
+ address-family ipv4 unicast autonomous-system 100
+  eigrp router-id 23.23.23.23
+  network 10.100.20.8 0.0.0.3
+  network 10.100.21.0 0.0.0.3
+  network 10.100.22.0 0.0.0.3
+  network 10.100.23.0 0.0.0.3
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/2
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface e0/3
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface s2/1
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  af-interface s2/2
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  topology base
+   redistribute eigrp 200 metric 100000 10 255 1 1500 route-map AS200-TO-AS100
+   maximum-paths 4
+   exit-af-topology
+  exit-address-family
+ exit
+
+router eigrp EIGRP200
+ address-family ipv4 unicast autonomous-system 200
+  eigrp router-id 23.23.23.23
+  network 10.200.23.0 0.0.0.3
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/0
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   exit-af-interface
+  topology base
+   redistribute eigrp 100 metric 100000 10 255 1 1500 route-map AS100-TO-AS200
+   exit-af-topology
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R24
+
+
+en
+conf t
+hostname R24
+no ip domain-lookup
+
+int e0/1
+ desc TO_R21
+ ip add 10.100.21.6 255.255.255.252
+ no shut
+ exit
+
+int s2/2
+ desc TO_R23
+ ip add 10.100.23.2 255.255.255.252
+ no shut
+ exit
+
+int lo10
+ ip add 172.24.10.1 255.255.255.0
+ exit
+
+int lo11
+ ip add 172.24.11.1 255.255.255.0
+ exit
+
+int lo12
+ ip add 172.24.12.1 255.255.255.0
+ exit
+
+int lo13
+ ip add 172.24.13.1 255.255.255.0
+ exit
+
+int lo14
+ ip add 172.24.14.1 255.255.255.0
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+router eigrp EIGRP100
+ address-family ipv4 unicast autonomous-system 100
+  eigrp router-id 24.24.24.24
+  network 10.100.21.4 0.0.0.3
+  network 10.100.23.0 0.0.0.3
+  network 172.24.10.0 0.0.0.255
+  network 172.24.11.0 0.0.0.255
+  network 172.24.12.0 0.0.0.255
+  network 172.24.13.0 0.0.0.255
+  network 172.24.14.0 0.0.0.255
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/1
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   summary-address 172.24.8.0 255.255.248.0
+   exit-af-interface
+  af-interface s2/2
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   summary-address 172.24.8.0 255.255.248.0
+   exit-af-interface
+  topology base
+   maximum-paths 2
+   exit-af-topology
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R25
+
+
+en
+conf t
+hostname R25
+no ip domain-lookup
+service dhcp
+
+int e0/0
+ desc EIGRP200_TO_R23
+ ip add 10.200.23.2 255.255.255.252
+ no shut
+ exit
+
+int e0/1
+ desc TRUNK_TO_SW25
+ no ip add
+ no shut
+ exit
+
+int e0/1.210
+ desc VLAN210_GATEWAY
+ encapsulation dot1Q 210
+ ip add 172.20.10.1 255.255.255.0
+ exit
+
+int e0/1.220
+ desc VLAN220_GATEWAY
+ encapsulation dot1Q 220
+ ip add 172.20.20.1 255.255.255.0
+ exit
+
+ip dhcp excluded-address 172.20.10.1 172.20.10.20
+ip dhcp excluded-address 172.20.20.1 172.20.20.20
+
+ip dhcp pool EIGRP-VLAN210
+ network 172.20.10.0 255.255.255.0
+ default-router 172.20.10.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+ip dhcp pool EIGRP-VLAN220
+ network 172.20.20.0 255.255.255.0
+ default-router 172.20.20.1
+ dns-server 8.8.8.8
+ domain-name encor.lab
+ lease 7
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+router eigrp EIGRP200
+ address-family ipv4 unicast autonomous-system 200
+  eigrp router-id 25.25.25.25
+  network 10.200.23.0 0.0.0.3
+  network 172.20.10.0 0.0.0.255
+  network 172.20.20.0 0.0.0.255
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/0
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   summary-address 172.20.0.0 255.255.0.0
+   exit-af-interface
+  topology base
+   exit-af-topology
+  exit-address-family
+ exit
+
+end
+wr
+
+
+# BGP DOMAIN
+
+## R29
+
+
+en
+conf t
+hostname R29
+no ip domain-lookup
+
+int s2/0
+ desc OSPF_AREA0_TO_R1
+ ip add 10.0.129.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int e0/2
+ desc TO_R30
+ ip add 10.65.29.1 255.255.255.252
+ no shut
+ exit
+
+int e0/1
+ desc TO_R31
+ ip add 10.65.31.2 255.255.255.252
+ no shut
+ exit
+
+int e1/0
+ desc TO_R32
+ ip add 10.65.0.5 255.255.255.252
+ no shut
+ exit
+
+int lo0
+ ip add 10.255.0.29 255.255.255.255
+ exit
+
+ip route 10.255.0.30 255.255.255.255 10.65.29.2
+ip route 10.255.0.31 255.255.255.255 10.65.31.1
+ip route 10.255.0.32 255.255.255.255 10.65.0.6
+
+ip route 0.0.0.0 0.0.0.0 10.65.29.2 220
+ip route 10.0.0.0 255.0.0.0 Null0 250
+ip route 172.16.0.0 255.240.0.0 Null0 250
+
+router ospf 1
+ router-id 29.29.29.29
+ auto-cost reference-bandwidth 10000
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface s2/0
+ network 10.0.129.0 0.0.0.3 area 0
+ default-information originate always metric 10 metric-type 1
+ exit
+
+router bgp 65000
+ bgp router-id 10.255.0.29
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.255.0.30 remote-as 65000
+ neighbor 10.255.0.30 update-source lo0
+ neighbor 10.255.0.31 remote-as 65000
+ neighbor 10.255.0.31 update-source lo0
+ neighbor 10.255.0.32 remote-as 65000
+ neighbor 10.255.0.32 update-source lo0
+ address-family ipv4
+  network 10.0.0.0 mask 255.0.0.0
+  network 172.16.0.0 mask 255.240.0.0
+  neighbor 10.255.0.30 activate
+  neighbor 10.255.0.30 next-hop-self
+  neighbor 10.255.0.30 send-community
+  neighbor 10.255.0.31 activate
+  neighbor 10.255.0.31 next-hop-self
+  neighbor 10.255.0.31 send-community
+  neighbor 10.255.0.32 activate
+  neighbor 10.255.0.32 next-hop-self
+  neighbor 10.255.0.32 send-community
+  maximum-paths ibgp 2
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R30
+
+
+en
+conf t
+hostname R30
+no ip domain-lookup
+
+int e0/0
+ desc EBGP_TO_INTERNET
+ ip add 192.0.2.1 255.255.255.252
+ no shut
+ exit
+
+int e0/1
+ desc EBGP_TO_R34_AS65002
+ ip add 203.0.113.1 255.255.255.252
+ no shut
+ exit
+
+int e0/2
+ desc TO_R29
+ ip add 10.65.29.2 255.255.255.252
+ no shut
+ exit
+
+int e0/3
+ desc TO_R32
+ ip add 10.65.30.1 255.255.255.252
+ no shut
+ exit
+
+int e1/0
+ desc TO_R31
+ ip add 10.65.0.1 255.255.255.252
+ no shut
+ exit
+
+int lo0
+ ip add 10.255.0.30 255.255.255.255
+ exit
+
+ip route 10.255.0.29 255.255.255.255 10.65.29.1
+ip route 10.255.0.31 255.255.255.255 10.65.0.2
+ip route 10.255.0.32 255.255.255.255 10.65.30.2
+
+ip route 10.0.0.0 255.0.0.0 10.65.29.1 220
+ip route 172.16.0.0 255.240.0.0 10.65.29.1 220
+
+ip prefix-list ENTERPRISE-OUT seq 5 permit 10.0.0.0/8
+ip prefix-list ENTERPRISE-OUT seq 10 permit 172.16.0.0/12
+
+route-map INTERNET-PRIMARY permit 10
+ set local-preference 200
+ exit
+
+router bgp 65000
+ bgp router-id 10.255.0.30
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.255.0.29 remote-as 65000
+ neighbor 10.255.0.29 update-source lo0
+ neighbor 10.255.0.31 remote-as 65000
+ neighbor 10.255.0.31 update-source lo0
+ neighbor 10.255.0.32 remote-as 65000
+ neighbor 10.255.0.32 update-source lo0
+ neighbor 203.0.113.2 remote-as 65002
+ neighbor 192.0.2.2 remote-as 65003
+ address-family ipv4
+  neighbor 10.255.0.29 activate
+  neighbor 10.255.0.29 next-hop-self
+  neighbor 10.255.0.29 send-community
+  neighbor 10.255.0.31 activate
+  neighbor 10.255.0.31 next-hop-self
+  neighbor 10.255.0.31 send-community
+  neighbor 10.255.0.32 activate
+  neighbor 10.255.0.32 next-hop-self
+  neighbor 10.255.0.32 send-community
+  neighbor 203.0.113.2 activate
+  neighbor 203.0.113.2 default-originate
+  neighbor 203.0.113.2 prefix-list ENTERPRISE-OUT out
+  neighbor 203.0.113.2 maximum-prefix 100
+  neighbor 192.0.2.2 activate
+  neighbor 192.0.2.2 route-map INTERNET-PRIMARY in
+  neighbor 192.0.2.2 prefix-list ENTERPRISE-OUT out
+  maximum-paths 2
+  maximum-paths ibgp 2
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R31
+
+
+en
+conf t
+hostname R31
+no ip domain-lookup
+
+int e0/0
+ desc EBGP_TO_INTERNET
+ ip add 192.0.2.5 255.255.255.252
+ no shut
+ exit
+
+int e0/1
+ desc TO_R29
+ ip add 10.65.31.1 255.255.255.252
+ no shut
+ exit
+
+int e0/2
+ desc TO_R32
+ ip add 10.65.32.2 255.255.255.252
+ no shut
+ exit
+
+int e0/3
+ desc EBGP_TO_R33_AS65001
+ ip add 203.0.113.5 255.255.255.252
+ no shut
+ exit
+
+int e1/0
+ desc TO_R30
+ ip add 10.65.0.2 255.255.255.252
+ no shut
+ exit
+
+int lo0
+ ip add 10.255.0.31 255.255.255.255
+ exit
+
+ip route 10.255.0.29 255.255.255.255 10.65.31.2
+ip route 10.255.0.30 255.255.255.255 10.65.0.1
+ip route 10.255.0.32 255.255.255.255 10.65.32.1
+
+ip route 10.0.0.0 255.0.0.0 10.65.32.1 220
+ip route 172.16.0.0 255.240.0.0 10.65.32.1 220
+
+ip prefix-list ENTERPRISE-OUT seq 5 permit 10.0.0.0/8
+ip prefix-list ENTERPRISE-OUT seq 10 permit 172.16.0.0/12
+
+route-map INTERNET-BACKUP permit 10
+ set local-preference 150
+ exit
+
+router bgp 65000
+ bgp router-id 10.255.0.31
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.255.0.29 remote-as 65000
+ neighbor 10.255.0.29 update-source lo0
+ neighbor 10.255.0.30 remote-as 65000
+ neighbor 10.255.0.30 update-source lo0
+ neighbor 10.255.0.32 remote-as 65000
+ neighbor 10.255.0.32 update-source lo0
+ neighbor 203.0.113.6 remote-as 65001
+ neighbor 192.0.2.6 remote-as 65003
+ address-family ipv4
+  neighbor 10.255.0.29 activate
+  neighbor 10.255.0.29 next-hop-self
+  neighbor 10.255.0.29 send-community
+  neighbor 10.255.0.30 activate
+  neighbor 10.255.0.30 next-hop-self
+  neighbor 10.255.0.30 send-community
+  neighbor 10.255.0.32 activate
+  neighbor 10.255.0.32 next-hop-self
+  neighbor 10.255.0.32 send-community
+  neighbor 203.0.113.6 activate
+  neighbor 203.0.113.6 default-originate
+  neighbor 203.0.113.6 prefix-list ENTERPRISE-OUT out
+  neighbor 203.0.113.6 maximum-prefix 100
+  neighbor 192.0.2.6 activate
+  neighbor 192.0.2.6 route-map INTERNET-BACKUP in
+  neighbor 192.0.2.6 prefix-list ENTERPRISE-OUT out
+  maximum-paths 2
+  maximum-paths ibgp 2
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R32
+
+
+en
+conf t
+hostname R32
+no ip domain-lookup
+
+int s2/0
+ desc OSPF_AREA0_TO_R3
+ ip add 10.0.132.2 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf message-digest-key 1 md5 OSPF-AREA0
+ no shut
+ exit
+
+int e0/0
+ desc EIGRP100_TO_R19
+ ip add 10.100.32.1 255.255.255.252
+ no shut
+ exit
+
+int e0/2
+ desc TO_R31
+ ip add 10.65.32.1 255.255.255.252
+ no shut
+ exit
+
+int e0/3
+ desc TO_R30
+ ip add 10.65.30.2 255.255.255.252
+ no shut
+ exit
+
+int e1/0
+ desc TO_R29
+ ip add 10.65.0.6 255.255.255.252
+ no shut
+ exit
+
+int lo0
+ ip add 10.255.0.32 255.255.255.255
+ exit
+
+ip route 10.255.0.29 255.255.255.255 10.65.0.5
+ip route 10.255.0.30 255.255.255.255 10.65.30.1
+ip route 10.255.0.31 255.255.255.255 10.65.32.2
+
+ip route 0.0.0.0 0.0.0.0 10.65.32.2 220
+ip route 10.0.0.0 255.0.0.0 Null0 250
+ip route 172.16.0.0 255.240.0.0 Null0 250
+
+ip prefix-list EIGRP-TO-OSPF seq 5 permit 172.20.0.0/16 le 24
+ip prefix-list EIGRP-TO-OSPF seq 10 permit 172.24.0.0/20 le 24
+
+route-map EIGRP-TO-OSPF deny 5
+ match tag 110
+ exit
+
+route-map EIGRP-TO-OSPF permit 10
+ match ip address prefix-list EIGRP-TO-OSPF
+ set metric 25
+ set metric-type type-1
+ set tag 100
+ exit
+
+key chain EIGRP-KEYS
+ key 1
+  key-string ENCOR-EIGRP
+  exit
+ exit
+
+router ospf 1
+ router-id 32.32.32.32
+ auto-cost reference-bandwidth 10000
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface s2/0
+ network 10.0.132.0 0.0.0.3 area 0
+ redistribute eigrp 100 subnets route-map EIGRP-TO-OSPF
+ default-information originate always metric 50 metric-type 1
+ exit
+
+router eigrp EIGRP100
+ address-family ipv4 unicast autonomous-system 100
+  eigrp router-id 32.32.32.32
+  network 10.100.32.0 0.0.0.3
+  af-interface default
+   passive-interface
+   exit-af-interface
+  af-interface e0/0
+   no passive-interface
+   authentication mode md5
+   authentication key-chain EIGRP-KEYS
+   summary-address 0.0.0.0 0.0.0.0 250
+   exit-af-interface
+  topology base
+   exit-af-topology
+  exit-address-family
+ exit
+
+router bgp 65000
+ bgp router-id 10.255.0.32
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.255.0.29 remote-as 65000
+ neighbor 10.255.0.29 update-source lo0
+ neighbor 10.255.0.30 remote-as 65000
+ neighbor 10.255.0.30 update-source lo0
+ neighbor 10.255.0.31 remote-as 65000
+ neighbor 10.255.0.31 update-source lo0
+ address-family ipv4
+  network 10.0.0.0 mask 255.0.0.0
+  network 172.16.0.0 mask 255.240.0.0
+  neighbor 10.255.0.29 activate
+  neighbor 10.255.0.29 next-hop-self
+  neighbor 10.255.0.29 send-community
+  neighbor 10.255.0.30 activate
+  neighbor 10.255.0.30 next-hop-self
+  neighbor 10.255.0.30 send-community
+  neighbor 10.255.0.31 activate
+  neighbor 10.255.0.31 next-hop-self
+  neighbor 10.255.0.31 send-community
+  maximum-paths ibgp 2
+  exit-address-family
+ exit
+
+end
+wr
+
+
+# EXTERNAL BGP DOMAINS
+
+## R34
+
+
+en
+conf t
+hostname R34
+no ip domain-lookup
+
+int e0/1
+ desc EBGP_TO_R30
+ ip add 203.0.113.2 255.255.255.252
+ no shut
+ exit
+
+int lo10
+ ip add 198.18.10.1 255.255.255.0
+ exit
+
+int lo11
+ ip add 198.18.11.1 255.255.255.0
+ exit
+
+int lo12
+ ip add 198.18.12.1 255.255.255.0
+ exit
+
+int lo13
+ ip add 198.18.13.1 255.255.255.0
+ exit
+
+int lo14
+ ip add 198.18.14.1 255.255.255.0
+ exit
+
+ip prefix-list R34-OUT seq 5 permit 198.18.10.0/24
+ip prefix-list R34-OUT seq 10 permit 198.18.11.0/24
+ip prefix-list R34-OUT seq 15 permit 198.18.12.0/24
+ip prefix-list R34-OUT seq 20 permit 198.18.13.0/24
+ip prefix-list R34-OUT seq 25 permit 198.18.14.0/24
+
+router bgp 65002
+ bgp router-id 34.34.34.34
+ bgp log-neighbor-changes
+ neighbor 203.0.113.1 remote-as 65000
+ address-family ipv4
+  network 198.18.10.0 mask 255.255.255.0
+  network 198.18.11.0 mask 255.255.255.0
+  network 198.18.12.0 mask 255.255.255.0
+  network 198.18.13.0 mask 255.255.255.0
+  network 198.18.14.0 mask 255.255.255.0
+  neighbor 203.0.113.1 activate
+  neighbor 203.0.113.1 prefix-list R34-OUT out
+  neighbor 203.0.113.1 maximum-prefix 100
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R33
+
+
+en
+conf t
+hostname R33
+no ip domain-lookup
+
+int e0/3
+ desc EBGP_TO_R31
+ ip add 203.0.113.6 255.255.255.252
+ no shut
+ exit
+
+int e0/0
+ desc IBGP_TO_R35
+ ip add 203.0.113.9 255.255.255.252
+ no shut
+ exit
+
+router bgp 65001
+ bgp router-id 33.33.33.33
+ bgp log-neighbor-changes
+ neighbor 203.0.113.5 remote-as 65000
+ neighbor 203.0.113.10 remote-as 65001
+ address-family ipv4
+  neighbor 203.0.113.5 activate
+  neighbor 203.0.113.5 maximum-prefix 100
+  neighbor 203.0.113.10 activate
+  neighbor 203.0.113.10 next-hop-self
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## R35
+
+
+en
+conf t
+hostname R35
+no ip domain-lookup
+
+int e0/0
+ desc IBGP_TO_R33
+ ip add 203.0.113.10 255.255.255.252
+ no shut
+ exit
+
+int lo10
+ ip add 198.51.10.1 255.255.255.0
+ exit
+
+int lo11
+ ip add 198.51.11.1 255.255.255.0
+ exit
+
+int lo12
+ ip add 198.51.12.1 255.255.255.0
+ exit
+
+int lo13
+ ip add 198.51.13.1 255.255.255.0
+ exit
+
+int lo14
+ ip add 198.51.14.1 255.255.255.0
+ exit
+
+router bgp 65001
+ bgp router-id 35.35.35.35
+ bgp log-neighbor-changes
+ neighbor 203.0.113.9 remote-as 65001
+ address-family ipv4
+  network 198.51.10.0 mask 255.255.255.0
+  network 198.51.11.0 mask 255.255.255.0
+  network 198.51.12.0 mask 255.255.255.0
+  network 198.51.13.0 mask 255.255.255.0
+  network 198.51.14.0 mask 255.255.255.0
+  neighbor 203.0.113.9 activate
+  exit-address-family
+ exit
+
+end
+wr
+
+
+## INTERNET
+
+
+en
+conf t
+hostname INTERNET
+no ip domain-lookup
+
+int e0/0
+ desc EBGP_TO_R31
+ ip add 192.0.2.6 255.255.255.252
+ no shut
+ exit
+
+int e0/1
+ desc EBGP_TO_R30
+ ip add 192.0.2.2 255.255.255.252
+ no shut
+ exit
+
+int lo0
+ desc INTERNET_TEST_ADDRESS
+ ip add 8.8.8.8 255.255.255.255
+ exit
+
+ip route 0.0.0.0 0.0.0.0 Null0
+
+ip route 10.0.0.0 255.0.0.0 192.0.2.1 220
+ip route 10.0.0.0 255.0.0.0 192.0.2.5 230
+ip route 172.16.0.0 255.240.0.0 192.0.2.1 220
+ip route 172.16.0.0 255.240.0.0 192.0.2.5 230
+
+ip prefix-list INTERNET-OUT seq 5 permit 0.0.0.0/0
+ip prefix-list INTERNET-OUT seq 10 permit 8.8.8.8/32
+
+router bgp 65003
+ bgp router-id 8.8.8.8
+ bgp log-neighbor-changes
+ neighbor 192.0.2.1 remote-as 65000
+ neighbor 192.0.2.5 remote-as 65000
+ address-family ipv4
+  network 0.0.0.0
+  network 8.8.8.8 mask 255.255.255.255
+  neighbor 192.0.2.1 activate
+  neighbor 192.0.2.1 prefix-list INTERNET-OUT out
+  neighbor 192.0.2.5 activate
+  neighbor 192.0.2.5 prefix-list INTERNET-OUT out
+  maximum-paths 2
+  exit-address-family
+ exit
+
+end
+wr
+
+
+# SWITCHES
+
+## SW12
+
+
+en
+conf t
+hostname SW12
+no ip domain-lookup
+
+vlan 10
+ name AREA10-VLAN10
+ exit
+
+vlan 20
+ name AREA10-VLAN20
+ exit
+
+int e0/0
+ desc TRUNK_TO_R4
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ no shut
+ exit
+
+int e0/1
+ desc PC15-VLAN10
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shut
+ exit
+
+int e0/2
+ desc PC17-VLAN20
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ no shut
+ exit
+
+end
+wr
+
+
+## SW13
+
+
+en
+conf t
+hostname SW13
+no ip domain-lookup
+
+vlan 30
+ name AREA30-TRANSIT
+ exit
+
+int e0/0
+ desc TO_R5
+ switchport mode access
+ switchport access vlan 30
+ no shut
+ exit
+
+int e0/1
+ desc TO_R7
+ switchport mode access
+ switchport access vlan 30
+ no shut
+ exit
+
+int e0/2
+ desc TO_R8
+ switchport mode access
+ switchport access vlan 30
+ no shut
+ exit
+
+int e0/3
+ desc TO_R9
+ switchport mode access
+ switchport access vlan 30
+ no shut
+ exit
+
+end
+wr
+
+
+## SW14
+
+
+en
+conf t
+hostname SW14
+no ip domain-lookup
+
+vlan 110
+ name STATIC-VLAN110
+ exit
+
+vlan 120
+ name STATIC-VLAN120
+ exit
+
+int e0/0
+ desc PC16-VLAN110
+ switchport mode access
+ switchport access vlan 110
+ spanning-tree portfast
+ no shut
+ exit
+
+int e0/1
+ desc TRUNK_TO_R10
+ switchport mode trunk
+ switchport trunk allowed vlan 110,120
+ no shut
+ exit
+
+int e0/2
+ desc TRUNK_TO_R11
+ switchport mode trunk
+ switchport trunk allowed vlan 110,120
+ no shut
+ exit
+
+int e0/3
+ desc PC18-VLAN120
+ switchport mode access
+ switchport access vlan 120
+ spanning-tree portfast
+ no shut
+ exit
+
+end
+wr
+
+
+## SW25
+
+
+en
+conf t
+hostname SW25
+no ip domain-lookup
+
+vlan 210
+ name EIGRP-VLAN210
+ exit
+
+vlan 220
+ name EIGRP-VLAN220
+ exit
+
+int e0/1
+ desc TRUNK_TO_R25
+ switchport mode trunk
+ switchport trunk allowed vlan 210,220
+ no shut
+ exit
+
+int e0/2
+ desc PC27-VLAN210
+ switchport mode access
+ switchport access vlan 210
+ spanning-tree portfast
+ no shut
+ exit
+
+int e0/3
+ desc PC28-VLAN220
+ switchport mode access
+ switchport access vlan 220
+ spanning-tree portfast
+ no shut
+ exit
+
+end
+wr
